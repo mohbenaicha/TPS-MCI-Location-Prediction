@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+spec:
+  selector:
+    matchLabels:
+      object: mci_worker_pod
+  replicas: 4 
+  template:
+    metadata:
+      labels:
+        object: mci_worker_pod
+    spec:
+      containers:
+      - name: mci-worker
+        image: moben1992/mci-worker
+        workingDir: /opt/mci_api/app
+        command: ["/bin/sh"]
+        args: ["-c", "celery -A tasks worker --loglevel=INFO"]
+        env:
+        - name: APP_PORT
+          value: "8001"
+        - name: DB_HOST
+          value: "192.168.65.4"
+          #value: "db-service.default.svc.cluster.local"
+        - name: DB_PORT
+          value: "30006"
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_PASSWORD
+          value: "password"
+        - name: DB_NAME
+          value: "mci-app-db"
+        - name: PROM_METRICS_PORT
+          value: "8002"
+        - name: REDIS_HOST
+          value: "10.104.122.178"
+        - name: REDIS_PORT
+          value: "30007"
+        ports:
+        - containerPort: 8001
+
+
+# kubectl delete service postgres
+# kubectl delete deployment postgres
+# kubectl delete configmap postgres-config
+# kubectl delete persistentvolumeclaim postgres-pv-claim
+# kubectl delete persistentvolume postgres-pv-volume
+# find db host name: kubectl exec -ti dnsutils -- nslookup <db-service-name>

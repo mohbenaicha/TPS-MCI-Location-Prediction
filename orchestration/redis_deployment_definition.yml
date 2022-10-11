@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      object: redis_pod_tag
+  template:
+    metadata:
+      labels:
+        object: redis_pod_tag
+    spec:
+      containers:
+        - name: redis-pod
+          image: redis:alpine
+          imagePullPolicy: "IfNotPresent"
+          command: ["/bin/sh"]
+          args: ["-c", "redis-server"]
+          ports:
+            - containerPort: 6379
+          # envFrom:
+          #   - configMapRef:
+          #       name: redis-config
+          volumeMounts:
+            - mountPath: /data # reference: https://hub.docker.com/_/redis
+              name: redisdata
+      volumes:
+        - name: redisdata
+          persistentVolumeClaim:
+            claimName: redis-pv-claim
+
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: redis-server
+#   namespace: redis-server
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: redis-server
+#   template:
+#     metadata:
+#       labels:
+#         app: redis-server
+#         name: redis-server
+#     spec:
+#       nodeSelector:
+#         node-type: worker
+#       containers:
+#       - name: redis-server
+#         image: redis
+#         args: ["--appendonly", "yes"]
+#         ports:
+#           - name: redis-server
+#             containerPort: 6379
+#         volumeMounts:
+#           - name: lv-storage
+#             mountPath: /data
+#         env:
+#             - name: ALLOW_EMPTY_PASSWORD
+#               value: "yes"
+#       volumes:
+#         - name: lv-storage
+#           persistentVolumeClaim:
+#             claimName: redis-pvc

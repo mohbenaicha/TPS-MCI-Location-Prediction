@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  labels:
+    object: redis_pod
+data:
+  # these are normally defined under secretKeyRef, but are maintained as public
+  # for users to test out the service  POSTGRES_DB: mci-app-db
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: password
