@@ -1,0 +1,26 @@
+include *.txt
+include *.md
+include *.pkl
+
+include mci_model/datasets/train.csv
+include mci_model/datasets/test.csv
+include mci_model/fitted_models/*.pkl
+include mci_model/VERSION
+include mci_model/config.yml
+
+include ./requirements/requirements.txt
+include ./requirements/test_requirements.txt
+recursive-include ./mci_model/*
+
+
+exclude *.log
+exclude *.cfg
+
+exclude ./research_project/*
+exclude ./mci-api/*
+exclude ./.tox/*
+exclude ./.git/*
+
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]

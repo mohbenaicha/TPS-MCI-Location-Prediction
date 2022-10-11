@@ -1,0 +1,123 @@
+package_name: mci_model
+
+training_data_file: train.csv
+test_data_file: test.csv
+
+pipeline_name: mci_model
+pipeline_save_file: mci_model_output_v
+
+# Using this to identify duplicates
+
+duplicate_record_key: event_unique_id
+
+datetime_features:
+  date: occurrencedate
+  day_of_year: occurrencedayofyear
+  month: occurrencemonth
+  day_of_week: occurrencedayofweek
+  day_of_month: occurrenceday # day of month
+  hour: occurrencehour
+
+features_na_not_allowed:
+  - Lat
+  - Long
+  # full date of occurence is required we can extract features from it
+  - occurrencedate
+
+NSA_features:
+  - Division
+  - Hood_ID
+  - Neighbourhood 
+
+engineered_features:
+  season: Season
+  ToD: ToDCrimeLevel
+  holiday: Holiday
+  weekday: Weekday
+  pub: Pub_Id
+  park: Park_Id
+  police_station: PS_Id
+
+targets:
+  - Lat
+  - Long
+
+train_features:
+  - occurrencedate
+  - occurrencehour
+
+  - premises_type
+  - occurrencemonth
+  - occurrencedayofweek
+  - MCI
+  - Neighbourhood
+  - occurrenceday
+  - occurrencedayofyear
+
+inference_features_to_add:
+  - Pub_Id
+  - Park_Id
+  - PS_Id
+
+test_size: 0.2
+
+random_state: 0
+
+holidays:
+  - 1
+  - 46
+  - 92
+  - 144
+  - 182
+  - 249
+  - 284
+  - 359
+  - 360
+    
+levels:
+  high:
+    - 0
+    - 12
+    - 18
+    - 21
+    - 20
+    - 22
+    - 19
+    - 23
+    - 17
+    - 15
+  med: 
+    - 16
+    - 14
+    - 1
+    - 2
+    - 13
+    - 11
+    - 10
+    - 9
+    - 3
+    - 8
+  low: 
+    - 4
+    - 7
+    - 5
+    - 6
+
+seasons:
+  winter: 
+    - 354
+    - 77 
+  spring: 
+    - 78
+    - 170
+  summer: 
+    - 171 
+    - 264
+  fall: 
+    - 265
+    - 353
+
+hyperparams:
+  pca_n_components: 0.95
+  pca_svd_solver: full
+  lr_normalize: False

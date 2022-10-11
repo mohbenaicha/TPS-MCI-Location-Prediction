@@ -1,0 +1,31 @@
+# Akin to pods that use cluter resources including memory and processing power
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: redis-pv-volume
+  labels:
+    type: local
+    object: redis_pod
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/data"
+
+--- # these access PVs
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: redis-pv-claim
+  labels:
+    object: redis_pod
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi

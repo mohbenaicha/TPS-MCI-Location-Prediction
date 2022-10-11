@@ -1,0 +1,10 @@
+Req. Latency: 
+sum(rate(per_prediction_latency_sum[5m])) / sum(rate(per_prediction_latency_count[5m]))
+
+
+1m Average Lat./Long/ Coordinate Prediction:
+sum (rate(lat_prediction_sum[1m])) / sum (rate(lat_prediction_count[1m]))
+sum (rate(long_prediction_sum[1m])) / sum (rate(long_prediction_count[1m]))
+
+1m Average Std. Dev.:
+stddev_over_time(lat_prediction_gauge[1m]) / (sqrt(count_over_time(prediction_counter[1m])))

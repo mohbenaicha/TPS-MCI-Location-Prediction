@@ -1,0 +1,75 @@
+version: '3'
+services:
+   
+  mci_api:
+    image:
+      moben1992/mci-application
+    # deploy:
+    #   mode: replicated
+    #   replicas: 2
+    environment:
+      APP_PORT: 8001
+      # these are normally in .env or as ${var} but are kept here for users who wish to test the application 
+      DB_HOST: host.docker.internal
+      DB_PORT: 30006 # for testing
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_NAME: mci-app-db
+      REDIS_HOST: host.docker.internal
+      REDIS_PORT: 6379
+      PROM_METRICS_PORT: 8003
+    ports:
+      - 8001:8001 # host:container port mapping
+    command: sh -c "python app/main.py"
+    depends_on:
+      - celery_worker
+      #- postgres-db
+    networks:
+      - back-end
+  
+  celery_worker:
+    image:
+      moben1992/mci-worker
+    environment: 
+      # these are normally in .env or as ${var} but are kept here for users who wish to test the application 
+      REDIS_HOST: host.docker.internal
+      REDIS_PORT: 6379
+    command: sh -c "celery -A tasks worker --loglevel=INFO"
+    depends_on:
+      - redis
+    networks:
+      - back-end
+  
+  redis:
+    image: "redis:alpine"
+    command: sh -c "redis-server"
+    ports:
+      - 6379:6379 # host:container port mapping
+    volumes:
+      - redis-data:/redis-data
+      # - ./redis.conf:/tmp/redis.conf
+    networks: 
+      - back-end
+
+  postgres_db:
+    image: postgres:latest
+    environment:
+      # these are normally in .env or as ${var} but are kept here for users who wish to test the application 
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mci-app-db
+    ports:
+      - 30006:5432 # host:container port mapping
+    volumes:
+      # persisting contrainer volume @ 'my_db' to host machine
+      # volume @ '/var/lib/postgresql/data'
+      - dbdata:/var/lib/postgresql/data
+    networks: 
+      - back-end
+
+volumes:
+  redis-data: {}
+  dbdata: {}
+
+networks:
+  back-end:
